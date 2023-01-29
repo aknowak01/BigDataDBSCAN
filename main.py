@@ -2,6 +2,7 @@
 import pandas as pd
 from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 # Wczytanie danych z pliku csv
 data = pd.read_csv('drinks.csv')
@@ -16,17 +17,22 @@ dbscan = DBSCAN(eps=6, min_samples=2)
 # Fitting modelu do danych
 dbscan.fit(X)
 
-#
 data['cluster'] = dbscan.labels_
 
 data.sort_values(by='cluster', inplace=True)
+scaler = StandardScaler()
+data['weighted_average'] = scaler.fit_transform(data[['weighted_average']])
+data['total_litres_of_pure_alcohol'] = scaler.fit_transform(data[['total_litres_of_pure_alcohol']])
+# Wyświetlenie wyniku
 
 
 plt.scatter(data['total_litres_of_pure_alcohol'], data['weighted_average'], c=data['cluster'])
 plt.xlabel('Total litres of pure alcohol consumed per person')
 plt.ylabel('Weighted average of alcohol consumption in liters (beer, wine, spirits)')
+
 plt.show()
+
 
 # Wyświetlenie wyniku
 pd.DataFrame.to_csv(data, 'drinks_clustered.csv')
-print(data)
+
